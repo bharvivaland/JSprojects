@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Geometry Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #84d0f0;
+        }
+        .shape-section {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .inputs {
+            margin-bottom: 10px;
+        }
+        .inputs label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .results {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 10px;
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>3D Geometry Calculator & Cheatsheet</h1>
+
+    <div class="shape-section" id="cube-section">
+        <h2>Cube</h2>
+        <p>Volume: <code>side³</code></p>
+        <p>Surface Area: <code>6 × side²</code></p>
+        <div class="inputs">
+            <label for="cube-side">Side Length:</label>
+            <input type="number" id="cube-side" min="0" placeholder="Enter side length">
+        </div>
+        <div class="results">
+            Volume: <span id="cube-volume">-</span><br>
+            Surface Area: <span id="cube-surface">-</span>
+        </div>
+        <button onclick="resetCube()">Reset</button>
+        <p class="error" id="cube-error"></p>
+    </div>
+
+    <div class="shape-section" id="sphere-section">
+        <h2>Sphere</h2>
+        <p>Volume: <code>(4/3) × π × radius³</code></p>
+        <p>Surface Area: <code>4 × π × radius²</code></p>
+        <div class="inputs">
+            <label for="sphere-radius">Radius:</label>
+            <input type="number" id="sphere-radius" min="0" placeholder="Enter radius">
+        </div>
+        <div class="results">
+            Volume: <span id="sphere-volume">-</span><br>
+            Surface Area: <span id="sphere-surface">-</span>
+        </div>
+        <button onclick="resetSphere()">Reset</button>
+        <p class="error" id="sphere-error"></p>
+    </div>
+
+    <!-- Other shapes sections can be added similarly -->
+
+    <script>
+        // Utility function to update results or show error
+        function validateInput(value, errorElement) {
+            if (value < 0 || isNaN(value)) {
+                errorElement.textContent = 'Invalid input! Please enter a positive number.';
+                return false;
+            } else {
+                errorElement.textContent = '';
+                return true;
+            }
+        }
+
+        // Cube calculations
+        document.getElementById('cube-side').addEventListener('input', () => {
+            const side = parseFloat(document.getElementById('cube-side').value);
+            const errorElement = document.getElementById('cube-error');
+            if (validateInput(side, errorElement)) {
+                document.getElementById('cube-volume').textContent = (side ** 3).toFixed(2) + ' cubic units';
+                document.getElementById('cube-surface').textContent = (6 * side ** 2).toFixed(2) + ' square units';
+            } else {
+                document.getElementById('cube-volume').textContent = '-';
+                document.getElementById('cube-surface').textContent = '-';
+            }
+        });
+
+        function resetCube() {
+            document.getElementById('cube-side').value = '';
+            document.getElementById('cube-volume').textContent = '-';
+            document.getElementById('cube-surface').textContent = '-';
+            document.getElementById('cube-error').textContent = '';
+        }
+
+        // Sphere calculations
+        document.getElementById('sphere-radius').addEventListener('input', () => {
+            const radius = parseFloat(document.getElementById('sphere-radius').value);
+            const errorElement = document.getElementById('sphere-error');
+            if (validateInput(radius, errorElement)) {
+                document.getElementById('sphere-volume').textContent = ((4 / 3) * Math.PI * radius ** 3).toFixed(2) + ' cubic units';
+                document.getElementById('sphere-surface').textContent = (4 * Math.PI * radius ** 2).toFixed(2) + ' square units';
+            } else {
+                document.getElementById('sphere-volume').textContent = '-';
+                document.getElementById('sphere-surface').textContent = '-';
+            }
+        });
+
+        function resetSphere() {
+            document.getElementById('sphere-radius').value = '';
+            document.getElementById('sphere-volume').textContent = '-';
+            document.getElementById('sphere-surface').textContent = '-';
+            document.getElementById('sphere-error').textContent = '';
+        }
+
+    </script>
+</body>
+</html>

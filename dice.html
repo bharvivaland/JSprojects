@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #84d0f0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .player {
+            margin: 20px 0;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        img:hover {
+            transform: scale(1.1);
+        }
+
+        h2 {
+            margin: 10px 0;
+        }
+
+        #winner {
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        #newGameBtn {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        #newGameBtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dice Game Simulator</h1>
+        <div class="player" id="player1">
+            <h2>Player 1</h2>
+            <img id="dice1" src="dice1.png" alt="Dice" />
+            <p id="result1"></p>
+        </div>
+        <div class="player" id="player2">
+            <h2>Player 2</h2>
+            <img id="dice2" src="dice2.png" alt="Dice" />
+            <p id="result2"></p>
+        </div>
+        <h2 id="winner"></h2>
+        <button id="newGameBtn">New Game</button>
+    </div>
+    <script>
+        const dice1 = document.getElementById('dice1');
+        const dice2 = document.getElementById('dice2');
+        const result1 = document.getElementById('result1');
+        const result2 = document.getElementById('result2');
+        const winnerText = document.getElementById('winner');
+        const newGameBtn = document.getElementById('newGameBtn');
+
+        let roll1, roll2;
+
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        dice1.addEventListener('click', () => {
+            roll1 = rollDice();
+            dice1.src = `dice${roll1}.png`;
+            result1.textContent = `Player 1 rolled: ${roll1}`;
+            dice2.style.pointerEvents = 'auto'; // Enable Player 2's dice
+        });
+
+        dice2.addEventListener('click', () => {
+            roll2 = rollDice();
+            dice2.src = `dice${roll2}.png`;
+            result2.textContent = `Player 2 rolled: ${roll2}`;
+            
+            // Determine the winner
+            if (roll1 > roll2) {
+                winnerText.textContent = "Player 1 Wins!";
+            } else if (roll1 < roll2) {
+                winnerText.textContent = "Player 2 Wins!";
+            } else {
+                winnerText.textContent = "It's a Tie!";
+            }
+            
+            dice1.style.pointerEvents = 'none'; // Disable Player 1's dice
+            dice2.style.pointerEvents = 'none'; // Disable Player 2's dice
+        });
+
+        newGameBtn.addEventListener('click', () => {
+            result1.textContent = '';
+            result2.textContent = '';
+            winnerText.textContent = '';
+            dice1.src = 'dice1.png';
+            dice2.src = 'dice2.png';
+            roll1 = roll2 = null;
+            dice1.style.pointerEvents = 'auto'; // Enable Player 1's dice
+            dice2.style.pointerEvents = 'none'; // Disable Player 2's dice
+        });
+    </script>
+</body>
+</html>

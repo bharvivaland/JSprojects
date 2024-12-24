@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Counter Application</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #84d0f0;
+        }
+        #counter-display {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: 2px solid #000;
+            border-radius: 5px;
+            transition: transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="counter-display">0</div>
+    <div class="button-container">
+        <button id="increment">+</button>
+        <button id="decrement">-</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        // DOM Elements
+        const counterDisplay = document.getElementById('counter-display');
+        const incrementButton = document.getElementById('increment');
+        const decrementButton = document.getElementById('decrement');
+        const resetButton = document.getElementById('reset');
+
+        // Initial counter value
+        let counter = 0;
+
+        // Update display
+        function updateDisplay() {
+            counterDisplay.textContent = counter;
+            decrementButton.disabled = counter === 0;
+        }
+
+        // Increment handler
+        incrementButton.addEventListener('click', () => {
+            counter++;
+            updateDisplay();
+        });
+
+        // Decrement handler
+        decrementButton.addEventListener('click', () => {
+            if (counter > 0) {
+                counter--;
+                updateDisplay();
+            }
+        });
+
+        // Reset handler
+        resetButton.addEventListener('click', () => {
+            counter = 0;
+            updateDisplay();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') {
+                counter++;
+                updateDisplay();
+            } else if (event.key === 'ArrowDown') {
+                if (counter > 0) {
+                    counter--;
+                    updateDisplay();
+                }
+            } else if (event.key === 'r' || event.key === 'R') {
+                counter = 0;
+                updateDisplay();
+            }
+        });
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
