@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Marking System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <style>
+        /* Your existing styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attendance Marking System</h1>
+
+        <div class="camera-section">
+            <div class="webcam-container">
+                <video id="webcam" autoplay playsinline></video>
+            </div>
+
+            <div class="status-box">
+                <div id="status" class="status">Identifing...</div>
+            </div>
+        </div>
+
+        <div class="attendance-records">
+            <h2>Today's Attendance</h2>
+            <div class="record-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th><br>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-log">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/6x9Fp2kzG/';
+        let model, webcam, maxPredictions;
+        let lastRecordTime = 0;
+        const RECORD_INTERVAL = 5000;
+
+        async function init() {
+            const modelURL = MODEL_URL + "model.json";
+            const metadataURL = MODEL_URL + "metadata.json";
+
+            try {
+                // Load the model
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // Setup webcam
+                const flip = true;
+                webcam = new tmImage.Webcam(640, 480, flip); // Correct webcam setup
+                await webcam.setup();  // Set up the webcam
+                await webcam.play();   // Play the webcam feed
+
+                // Attach webcam to the video element
+                const webcamElement = document.getElementById('webcam');
+                webcamElement.srcObject = webcam.webcam.srcObject;
+
+                // Start prediction loop
+                window.requestAnimationFrame(loop);
+
+                // Update status
+                document.getElementById("status").textContent = "System Ready";
+            } catch (error) {
+                document.getElementById("status").textContent = "Error: Please check camera permissions";
+                console.error(error);
+            }
+        }
+
+        async function loop() {
+            webcam.update();  // Update webcam stream
+            await predict();
+            window.requestAnimationFrame(loop);  // Keep looping
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            const statusDiv = document.getElementById("status");
+
+            // Get the highest probability prediction
+            const highestPrediction = prediction.sort((a, b) => b.probability - a.probability)[0];
+            const predictedClass = highestPrediction.className;
+            const probability = highestPrediction.probability;
+
+            // Check if probability is high enough to confirm attendance
+            if (probability > 0.8) {
+                statusDiv.innerHTML = `<span class="present">Bharvi is present</span>`;
+                statusDiv.classList.add('present');
+                statusDiv.classList.remove('absent');
+            } else {
+                statusDiv.innerHTML = "<span class='absent'>Bharvi is absent</span>";
+                statusDiv.classList.add('absent');
+                statusDiv.classList.remove('present');
+            }
+
+            // Record attendance at intervals
+            const currentTime = Date.now();
+            if (currentTime - lastRecordTime >= RECORD_INTERVAL) {
+                recordAttendance(predictedClass, probability);
+                lastRecordTime = currentTime;
+            }
+        }
+
+        function recordAttendance(predictedClass, probability) {
+            const table = document.getElementById("attendance-log");
+            const row = document.createElement("tr");
+            const currentTime = new Date().toLocaleTimeString();
+
+            row.innerHTML = ` 
+                <td>${currentTime}</td>
+                <td><span class="${probability > 0.9 ? 'present-entry' : 'absent-entry'}">Bharvi is ${probability > 0.9 ? 'Present' : 'Absent'}</span></td>
+            `;
+
+            // Add the record at the top
+            if (table.firstChild) {
+                table.insertBefore(row, table.firstChild);
+            } else {
+                table.appendChild(row);
+            }
+
+            // Keep only the last 50 attendance records
+            while (table.children.length > 50) {
+                table.removeChild(table.lastChild);
+            }
+        }
+
+        // Initialize when the page loads
+        window.addEventListener('load', init);
+
+    </script>
+</body>
+</html>
